@@ -1,5 +1,4 @@
 import Image from "next/image";
-import talktoLogo from "@/talktologo.png";
 
 export default function TalktoLogoImage({
   height = 40,
@@ -8,9 +7,11 @@ export default function TalktoLogoImage({
 }) {
   return (
     <Image
-      src={talktoLogo}
+      src="/talktologo.png"
       alt="Talkto"
+      width={Math.round(height * 2.2)}
       height={height}
+      unoptimized
       style={{ width: "auto", height, objectFit: "contain" }}
       priority
     />

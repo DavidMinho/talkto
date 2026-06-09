@@ -12,7 +12,7 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import NextLink from "next/link";
-import BrandMark from "@/components/BrandMark";
+import TalktoLogoImage from "@/components/TalktoLogoImage";
 import { apiFetch } from "@/lib/api-client";
 
 type Mode = "login" | "register";
@@ -83,7 +83,7 @@ function AuthFormInner({ mode }: { mode: Mode }) {
       <Card sx={{ width: "100%", maxWidth: 420 }}>
         <CardContent sx={{ p: 4 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.25, mb: 1 }}>
-            <BrandMark size={40} />
+            <TalktoLogoImage height={40} />
             <Typography variant="h5" sx={{ fontWeight: 800 }}>
               Talkto
             </Typography>
