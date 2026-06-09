@@ -10,14 +10,14 @@ hPanel → Node.js App → **Deployments → Settings → Environment variables*
 cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 ```
 
-ต้องมีครบ:
+ต้องมีครบ (ค่าที่มี `+` `/` `=` ต้องใส่เครื่องหมาย `"` ครอบ):
 - `DATABASE_URL`
-- `NEXTAUTH_SECRET`
+- `NEXTAUTH_SECRET` และ `AUTH_SECRET` (ค่าเดียวกัน)
 - `NEXTAUTH_URL=https://techfloy.com`
 - `NODE_ENV=production`
 - `CLOUDINARY_*`
 
-กด **Save**
+กด **Save** แล้วตรวจว่า `NEXTAUTH_SECRET` ไม่ถูกตัดท้าย
 
 ---
 
