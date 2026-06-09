@@ -1,67 +1,43 @@
-# Deploy Talkto บน Hostinger Node.js Web App
+# Deploy Talkto บน Hostinger Node.js Web App (techfloy.com)
 
-สำหรับ **Web Hosting Plan** ที่มีตัวเลือก **Node.js Web App** (Business ขึ้นไป)
+## ตั้งค่าใน hPanel
 
-> **หมายเหตุ:** แชท realtime (Socket.io) อาจไม่เสถียรบน managed hosting — ถ้าไม่ทำงาน ต้องใช้ VPS หรือ Render
+**Websites → Node.js Web App → Settings / Environment**
 
----
-
-## 1. สร้าง Node.js Web App
-
-1. hPanel → **Websites** → **Add website**
-2. เลือก **Node.js Web App**
-3. **Import Git Repository** → Authorize GitHub → เลือก `DavidMinho/talkto`
-
----
-
-## 2. ตั้งค่า Build & Start
+### Build & Start
 
 | ช่อง | ค่า |
 |------|-----|
-| Node.js version | **20** |
-| Framework | Other / Express (ถ้าเลือกได้) |
+| Node.js | **20** |
 | Entry file | `server.ts` |
-| Build command | `npm ci && npm run build:hostinger` |
+| Build command | `npm ci --ignore-scripts && npm run build:hostinger` |
 | Start command | `npm run start:hostinger` |
 
----
+### Environment variables (ครบทุกตัว)
 
-## 3. Environment Variables
+คัดลอกจากไฟล์ `hostinger.env.deploy` บน Mac (หนึ่งบรรทัด = หนึ่งตัวแปร)
 
-| ตัวแปร | ค่า |
-|--------|-----|
-| `DATABASE_URL` | Neon PostgreSQL connection string (`?sslmode=require`) |
-| `NEXTAUTH_SECRET` | `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | URL จริงหลัง deploy เช่น `https://talkto.techfloy.com` |
+| ตัวแปร | ตัวอย่าง |
+|--------|---------|
+| `DATABASE_URL` | `postgresql://...@....neon.tech/neondb?sslmode=require` |
+| `NEXTAUTH_SECRET` | สตริงยาว random |
+| `NEXTAUTH_URL` | `https://techfloy.com` |
 | `NODE_ENV` | `production` |
 | `CLOUDINARY_CLOUD_NAME` | จาก Cloudinary |
 | `CLOUDINARY_API_KEY` | จาก Cloudinary |
 | `CLOUDINARY_API_SECRET` | จาก Cloudinary |
-| `ADMIN_EMAILS` | (optional) อีเมล admin |
+| `ADMIN_EMAILS` | (optional) |
+
+**สำคัญ:** ใน Hostinger ใส่แค่ `ชื่อ=ค่า` ไม่ต้องมี `"` รอบค่า
 
 ---
 
-## 4. Deploy
+## Deploy & ทดสอบ
 
-กด **Deploy** → รอ build เสร็จ → เปิด URL ที่ Hostinger ให้
-
-หลังรู้ URL จริง:
-1. แก้ `NEXTAUTH_URL` ให้ตรง URL
-2. **Redeploy**
-
-ทดสอบ: `https://YOUR-URL/api/health` → ต้องได้ `"db":"connected"`
-
-ถ้าได้ `"db":"disconnected"` หรือหน้าแรก error 500 → ตรวจ `DATABASE_URL` และ `NEXTAUTH_SECRET` ใน Environment แล้ว Redeploy
-
-**ทดสอบเร็ว:** เปิด `https://techfloy.com/login` ก่อน (หน้า login มักโหลดได้แม้ DB ยังไม่ต่อ)
-
----
-
-## 5. ใช้ subdomain กับ techfloy.com (optional)
-
-1. hPanel → Domains → สร้าง subdomain `talkto.techfloy.com`
-2. ชี้ subdomain ไปที่ Node.js Web App
-3. ตั้ง `NEXTAUTH_URL=https://talkto.techfloy.com` แล้ว redeploy
+1. Save env → **Redeploy**
+2. ดู Deployment log ต้องเห็น `Talkto ready on...`
+3. `https://techfloy.com/api/health` → `"db":"connected"`
+4. `https://techfloy.com/login` → สมัครสมาชิก → ทดสอบแชท
 
 ---
 
@@ -69,7 +45,7 @@
 
 | อาการ | แก้ |
 |-------|-----|
-| Build fail Prisma | ใช้ `build:hostinger` (สลับ schema เป็น PostgreSQL) |
-| Login redirect ผิด | แก้ `NEXTAUTH_URL` |
-| แชทไม่ realtime | ข้อจำกัด hosting — ใช้ VPS/Render |
-| DB error | ตรวจ `DATABASE_URL` จาก Neon |
+| `db: disconnected` | ตรวจ `DATABASE_URL` + redeploy |
+| NextAuth config error | ตรวจ `NEXTAUTH_SECRET` + `NEXTAUTH_URL` |
+| หน้าแรก 500 | เปิด `/login` ก่อน — หลังแก้ env จะหาย |
+| แชทไม่ realtime | ข้อจำกัด Web Hosting — ลอง refresh หรือใช้ VPS |

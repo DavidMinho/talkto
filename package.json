@@ -7,8 +7,8 @@
     "build": "prisma generate && next build",
     "start": "NODE_ENV=production tsx server.ts",
     "start:prod": "prisma migrate deploy && NODE_ENV=production tsx server.ts",
-    "build:hostinger": "cp prisma/schema.postgresql.prisma prisma/schema.prisma && npm run build",
-    "start:hostinger": "npm run start:prod",
+    "build:hostinger": "cp prisma/schema.postgresql.prisma prisma/schema.prisma && npx prisma generate && next build",
+    "start:hostinger": "sh scripts/hostinger-start.sh",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
@@ -39,6 +39,9 @@
     "socket.io-client": "^4.8.3",
     "swagger-ui-react": "^5.32.6",
     "zod": "^4.4.3"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

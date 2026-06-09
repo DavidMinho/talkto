@@ -12,6 +12,7 @@ export function getSocket() {
       withCredentials: true,
       reconnection: true,
       reconnectionAttempts: 10,
+      transports: ["polling", "websocket"],
     });
   }
   return socket;

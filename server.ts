@@ -7,6 +7,16 @@ const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOSTNAME ?? (dev ? "localhost" : "0.0.0.0");
 const port = parseInt(process.env.PORT ?? "3010", 10);
 
+if (!dev) {
+  const required = ["DATABASE_URL", "NEXTAUTH_SECRET", "NEXTAUTH_URL"] as const;
+  for (const key of required) {
+    if (!process.env[key]) {
+      console.error(`Missing required env: ${key}`);
+      process.exit(1);
+    }
+  }
+}
+
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 

@@ -37,6 +37,9 @@ yarn-error.log*
 .env.*.local
 .env.neon.deploy
 env.render.ready
+hostinger.env.deploy
+scripts/vps-install-ready.sh
+.env.vps.deploy
 !.env.example
 
 # vercel
