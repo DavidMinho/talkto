@@ -19,6 +19,18 @@ cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 
 กด **Save** แล้วตรวจว่า `NEXTAUTH_SECRET` ไม่ถูกตัดท้าย
 
+ถ้า Import ไม่ได้ ให้เพิ่มทีละตัวใน hPanel (ชื่อตัวแปรต้องตรงเป๊ะ):
+
+| Name | Value |
+|------|-------|
+| `DATABASE_URL` | connection string จาก Neon |
+| `NEXTAUTH_SECRET` | ค่า secret (ใส่ `"..."` ครอบถ้ามีอักขระพิเศษ) |
+| `AUTH_SECRET` | ค่าเดียวกับ `NEXTAUTH_SECRET` |
+| `NEXTAUTH_URL` | `https://techfloy.com` |
+| `NODE_ENV` | `production` |
+
+Build/Start log ต้อง **ไม่** ขึ้น `Missing: NEXTAUTH_SECRET`
+
 ---
 
 ## 2. Build & Start settings

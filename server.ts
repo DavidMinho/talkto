@@ -1,7 +1,12 @@
 import { createServer } from "http";
 import { type IncomingMessage, type ServerResponse } from "http";
 import next from "next";
-import { loadRuntimeEnv } from "./src/lib/runtime-env";
+import {
+  getAuthSecret,
+  getDatabaseUrl,
+  getNextAuthUrl,
+  loadRuntimeEnv,
+} from "./src/lib/runtime-env";
 import { initSocketServer } from "./src/server/socket";
 
 loadRuntimeEnv();
@@ -11,14 +16,15 @@ const hostname = process.env.HOSTNAME ?? (dev ? "localhost" : "0.0.0.0");
 const port = parseInt(process.env.PORT ?? "3010", 10);
 
 if (!dev) {
-  const required = ["DATABASE_URL", "NEXTAUTH_URL"] as const;
-  for (const key of required) {
-    if (!process.env[key]) {
-      console.error(`Missing required env: ${key}`);
-      process.exit(1);
-    }
+  if (!getDatabaseUrl()) {
+    console.error("Missing required env: DATABASE_URL");
+    process.exit(1);
   }
-  if (!process.env.NEXTAUTH_SECRET && !process.env.AUTH_SECRET) {
+  if (!getNextAuthUrl()) {
+    console.error("Missing required env: NEXTAUTH_URL");
+    process.exit(1);
+  }
+  if (!getAuthSecret()) {
     console.error("Missing required env: NEXTAUTH_SECRET (or AUTH_SECRET)");
     process.exit(1);
   }

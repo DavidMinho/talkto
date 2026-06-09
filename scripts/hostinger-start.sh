@@ -7,7 +7,7 @@ export NODE_ENV="${NODE_ENV:-production}"
 export HOSTINGER="${HOSTINGER:-1}"
 
 if command -v node >/dev/null 2>&1; then
-  node scripts/write-production-env.mjs || true
+  REQUIRE_ENV=1 node scripts/write-production-env.mjs
 fi
 
 if [ -f .env ]; then

@@ -33,7 +33,7 @@ export async function GET() {
     // Keep 200 so platform health checks pass once the process is up.
   }
 
-  const hasDatabaseUrl = Boolean(runtimeEnv("DATABASE_URL"));
+  const hasDatabaseUrl = Boolean(runtimeEnv("DATABASE", "URL"));
   const hasAuthSecret = Boolean(getAuthSecret());
 
   return apiSuccess({

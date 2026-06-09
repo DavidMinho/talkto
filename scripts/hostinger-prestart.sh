@@ -43,7 +43,7 @@ export NODE_ENV="${NODE_ENV:-production}"
 export HOSTINGER="${HOSTINGER:-1}"
 
 echo "Persisting production .env for Next.js runtime..."
-node scripts/write-production-env.mjs
+REQUIRE_ENV=1 node scripts/write-production-env.mjs
 
 if [ -n "${DATABASE_URL:-}" ]; then
   db_host=$(printf '%s' "$DATABASE_URL" | sed -E 's#^[^@]+@([^/:?]+).*#\1#')

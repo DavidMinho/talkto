@@ -11,7 +11,10 @@ export function buildAuthOptions(): NextAuthOptions {
   loadRuntimeEnv();
   const secret = getAuthSecret();
   if (!secret) {
-    console.error("[auth] Missing NEXTAUTH_SECRET or AUTH_SECRET");
+    console.error(
+      "[auth] Missing NEXTAUTH_SECRET or AUTH_SECRET — import hostinger.env.deploy in hPanel",
+    );
+    throw new Error("Missing NEXTAUTH_SECRET or AUTH_SECRET");
   }
 
   return {
@@ -102,8 +105,6 @@ export function buildAuthOptions(): NextAuthOptions {
     secret,
   };
 }
-
-export const authOptions = buildAuthOptions();
 
 export function getSession() {
   return getServerSession(buildAuthOptions());
