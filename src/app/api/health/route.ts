@@ -1,6 +1,11 @@
 import { prisma } from "@/lib/db";
 import { apiSuccess } from "@/lib/api/response";
-import { getAuthSecret, runtimeEnv } from "@/lib/runtime-env";
+import {
+  findProjectRoot,
+  getAuthSecret,
+  getLoadedEnvFiles,
+  runtimeEnv,
+} from "@/lib/runtime-env";
 
 const startedAt = Date.now();
 
@@ -36,6 +41,9 @@ export async function GET() {
     db,
     auth: hasAuthSecret ? "configured" : "missing-secret",
     env: hasDatabaseUrl ? "database-url-set" : "database-url-missing",
+    cwd: process.cwd(),
+    root: findProjectRoot(),
+    envFiles: getLoadedEnvFiles(),
     ...(dbHint ? { dbHint } : {}),
     uptime: Math.floor((Date.now() - startedAt) / 1000),
     timestamp: new Date().toISOString(),

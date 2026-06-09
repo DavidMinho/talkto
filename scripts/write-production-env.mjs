@@ -30,5 +30,10 @@ if (!lines.some((line) => line.startsWith("HOSTINGER="))) {
   lines.push('HOSTINGER="1"');
 }
 
-writeFileSync(".env", `${lines.join("\n")}\n`, "utf8");
-console.log(`Wrote .env with ${lines.length} variables`);
+const body = `${lines.join("\n")}\n`;
+for (const name of [".env", ".env.production", ".env.local"]) {
+  writeFileSync(name, body, "utf8");
+}
+console.log(
+  `Wrote ${lines.length} variables to .env, .env.production, and .env.local`,
+);

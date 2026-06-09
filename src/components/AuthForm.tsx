@@ -57,6 +57,10 @@ function AuthFormInner({ mode }: { mode: Mode }) {
       });
 
       if (result?.error) {
+        if (result.error === "Configuration") {
+          setError("เซิร์ฟเวอร์ตั้งค่าไม่ครบ (NEXTAUTH_SECRET / DATABASE_URL) — รอ redeploy หรือติดต่อผู้ดูแล");
+          return;
+        }
         setError(mode === "login" ? "อีเมลหรือรหัสผ่านไม่ถูกต้อง" : "ล็อกอินไม่สำเร็จหลังสมัคร");
         return;
       }
