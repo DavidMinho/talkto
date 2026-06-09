@@ -35,6 +35,8 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+.env.neon.deploy
+env.render.ready
 !.env.example
 
 # vercel
