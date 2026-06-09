@@ -5,7 +5,9 @@ echo "=== Talkto Hostinger start ==="
 
 missing=""
 [ -z "${DATABASE_URL:-}" ] && missing="$missing DATABASE_URL"
-[ -z "${NEXTAUTH_SECRET:-}" ] && missing="$missing NEXTAUTH_SECRET"
+if [ -z "${NEXTAUTH_SECRET:-}" ] && [ -z "${AUTH_SECRET:-}" ]; then
+  missing="$missing NEXTAUTH_SECRET"
+fi
 [ -z "${NEXTAUTH_URL:-}" ] && missing="$missing NEXTAUTH_URL"
 
 if [ -n "$missing" ]; then

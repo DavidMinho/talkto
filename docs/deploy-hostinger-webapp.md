@@ -46,6 +46,7 @@
 | อาการ | แก้ |
 |-------|-----|
 | `db: disconnected` | ตรวจ `DATABASE_URL` + redeploy |
+| `[next-auth][error][NO_SECRET]` | เพิ่ม `NEXTAUTH_SECRET` ใน Environment แล้ว Redeploy (หรือใช้ `AUTH_SECRET` ค่าเดียวกัน) |
 | NextAuth config error | ตรวจ `NEXTAUTH_SECRET` + `NEXTAUTH_URL` |
 | หน้าแรก 500 | เปิด `/login` ก่อน — หลังแก้ env จะหาย |
 | แชทไม่ realtime | ข้อจำกัด Web Hosting — ลอง refresh หรือใช้ VPS |

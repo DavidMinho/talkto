@@ -8,12 +8,16 @@ const hostname = process.env.HOSTNAME ?? (dev ? "localhost" : "0.0.0.0");
 const port = parseInt(process.env.PORT ?? "3010", 10);
 
 if (!dev) {
-  const required = ["DATABASE_URL", "NEXTAUTH_SECRET", "NEXTAUTH_URL"] as const;
+  const required = ["DATABASE_URL", "NEXTAUTH_URL"] as const;
   for (const key of required) {
     if (!process.env[key]) {
       console.error(`Missing required env: ${key}`);
       process.exit(1);
     }
+  }
+  if (!process.env.NEXTAUTH_SECRET && !process.env.AUTH_SECRET) {
+    console.error("Missing required env: NEXTAUTH_SECRET (or AUTH_SECRET)");
+    process.exit(1);
   }
 }
 
