@@ -114,7 +114,11 @@ certbot --nginx -d your-domain.com
 
 ---
 
-## วิธี B — Node.js Web App (hPanel)
+## วิธี B — Node.js Web App (Web Hosting Plan)
+
+ดูขั้นตอนละเอียด: **[deploy-hostinger-webapp.md](./deploy-hostinger-webapp.md)**
+
+## วิธี B (เดิม) — Node.js Web App (hPanel)
 
 1. **Websites → Add website → Node.js Web App**
 2. **Import Git Repository** → เลือก `DavidMinho/talkto`
