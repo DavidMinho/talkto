@@ -18,7 +18,7 @@ if [ -f .env ]; then
   set +a
 fi
 
-for key in DATABASE_URL NEXTAUTH_SECRET AUTH_SECRET NEXTAUTH_URL CLOUDINARY_CLOUD_NAME CLOUDINARY_API_KEY CLOUDINARY_API_SECRET ADMIN_EMAILS; do
+for key in DATABASE_URL DB_HOST DB_USER DB_PASSWORD DB_NAME NEXTAUTH_SECRET AUTH_SECRET NEXTAUTH_URL CLOUDINARY_CLOUD_NAME CLOUDINARY_API_KEY CLOUDINARY_API_SECRET ADMIN_EMAILS; do
   eval "val=\${$key:-}"
   if [ -n "$val" ]; then
     cleaned=$(strip_quotes "$val")
@@ -27,7 +27,9 @@ for key in DATABASE_URL NEXTAUTH_SECRET AUTH_SECRET NEXTAUTH_URL CLOUDINARY_CLOU
 done
 
 missing=""
-[ -z "${DATABASE_URL:-}" ] && missing="$missing DATABASE_URL"
+if [ -z "${DATABASE_URL:-}" ] && { [ -z "${DB_HOST:-}" ] || [ -z "${DB_USER:-}" ] || [ -z "${DB_PASSWORD:-}" ]; }; then
+  missing="$missing DATABASE_URL(or DB_HOST/DB_USER/DB_PASSWORD)"
+fi
 if [ -z "${NEXTAUTH_SECRET:-}" ] && [ -z "${AUTH_SECRET:-}" ]; then
   missing="$missing NEXTAUTH_SECRET"
 fi
@@ -49,13 +51,13 @@ if [ -n "${DATABASE_URL:-}" ]; then
   case "$DATABASE_URL" in
     postgresql://*|postgres://*) ;;
     *)
-      echo "ERROR: DATABASE_URL must start with postgresql://"
-      echo "Current prefix: $(printf '%.20s' "$DATABASE_URL")"
-      exit 1
+      echo "WARN: DATABASE_URL invalid prefix, will try DB_HOST/DB_USER/DB_PASSWORD"
       ;;
   esac
   db_host=$(printf '%s' "$DATABASE_URL" | sed -E 's#^[^@]+@([^/:?]+).*#\1#')
   echo "DATABASE_URL host: ${db_host:-unknown}"
+elif [ -n "${DB_HOST:-}" ]; then
+  echo "DATABASE_URL host: ${DB_HOST} (from DB_HOST)"
 else
   echo "DATABASE_URL host: (not set)"
 fi

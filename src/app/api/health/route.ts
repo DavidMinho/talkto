@@ -3,6 +3,8 @@ import { apiSuccess } from "@/lib/api/response";
 import {
   findProjectRoot,
   getAuthSecret,
+  getDatabaseHost,
+  getDatabaseUrl,
   getDatabaseUrlScheme,
   getLoadedEnvFiles,
   runtimeEnv,
@@ -44,6 +46,8 @@ export async function GET() {
     auth: hasAuthSecret ? "configured" : "missing-secret",
     env: hasDatabaseUrl ? "database-url-set" : "database-url-missing",
     dbScheme: dbScheme ?? "missing",
+    dbHost: getDatabaseHost() ?? "missing",
+    dbUrlLength: getDatabaseUrl()?.length ?? 0,
     cwd: process.cwd(),
     root: findProjectRoot(),
     envFiles: getLoadedEnvFiles(),

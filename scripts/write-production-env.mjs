@@ -5,6 +5,10 @@ const root = process.env.INIT_CWD || process.cwd();
 
 const keys = [
   "DATABASE_URL",
+  "DB_HOST",
+  "DB_USER",
+  "DB_PASSWORD",
+  "DB_NAME",
   "NEXTAUTH_SECRET",
   "AUTH_SECRET",
   "NEXTAUTH_URL",
@@ -29,10 +33,27 @@ for (const key of keys) {
   } else if (
     key !== "PORT" &&
     key !== "ADMIN_EMAILS" &&
-    key !== "HOSTINGER"
+    key !== "HOSTINGER" &&
+    key !== "DB_HOST" &&
+    key !== "DB_USER" &&
+    key !== "DB_PASSWORD" &&
+    key !== "DB_NAME"
   ) {
     missing.push(key);
   }
+}
+
+const hasDatabase =
+  present.includes("DATABASE_URL") ||
+  (present.includes("DB_HOST") &&
+    present.includes("DB_USER") &&
+    present.includes("DB_PASSWORD"));
+
+if (!hasDatabase) {
+  missing.push("DATABASE_URL(or DB_HOST/DB_USER/DB_PASSWORD)");
+} else {
+  const idx = missing.indexOf("DATABASE_URL");
+  if (idx >= 0) missing.splice(idx, 1);
 }
 
 if (!lines.some((line) => line.startsWith("NODE_ENV="))) {

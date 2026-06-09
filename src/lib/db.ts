@@ -1,24 +1,34 @@
 import { PrismaClient } from "@prisma/client";
 import { getDatabaseUrl, loadRuntimeEnv } from "@/lib/runtime-env";
 
-loadRuntimeEnv();
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-
-function createPrismaClient() {
-  const databaseUrl = getDatabaseUrl();
-  if (databaseUrl) {
-    process.env.DATABASE_URL = databaseUrl;
+export function getPrisma(): PrismaClient {
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
   }
-  return new PrismaClient({
-    datasources: databaseUrl ? { db: { url: databaseUrl } } : undefined,
+
+  loadRuntimeEnv();
+  const databaseUrl = getDatabaseUrl();
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL is not configured");
+  }
+
+  process.env.DATABASE_URL = databaseUrl;
+  globalForPrisma.prisma = new PrismaClient({
+    datasources: { db: { url: databaseUrl } },
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
+
+  return globalForPrisma.prisma;
 }
 
-export const prisma =
-  globalForPrisma.prisma ?? createPrismaClient();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
-}
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrisma();
+    const value = Reflect.get(client, prop, receiver);
+    return typeof value === "function"
+      ? (value as (...args: unknown[]) => unknown).bind(client)
+      : value;
+  },
+});

@@ -113,25 +113,46 @@ export function getAuthSecret(): string | undefined {
   );
 }
 
+function ensureSslMode(url: string): string {
+  if (url.includes("sslmode=")) return url;
+  return `${url}${url.includes("?") ? "&" : "?"}sslmode=require`;
+}
+
+function buildDatabaseUrlFromParts(): string | undefined {
+  const host = normalizeEnvValue(runtimeEnv("DB", "HOST"));
+  const user = normalizeEnvValue(runtimeEnv("DB", "USER"));
+  const password = normalizeEnvValue(runtimeEnv("DB", "PASSWORD"));
+  const name = normalizeEnvValue(runtimeEnv("DB", "NAME")) ?? "neondb";
+
+  if (!host || !user || !password) return undefined;
+
+  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}/${name}?sslmode=require`;
+}
+
 export function getDatabaseUrl(): string | undefined {
   const raw = normalizeEnvValue(runtimeEnv("DATABASE", "URL"));
-  if (!raw) return undefined;
-
-  if (raw.startsWith("postgresql://") || raw.startsWith("postgres://")) {
-    return raw;
+  if (raw?.startsWith("postgresql://") || raw?.startsWith("postgres://")) {
+    return ensureSslMode(raw);
   }
 
-  if (raw.startsWith("//")) {
-    return `postgresql:${raw}`;
+  if (raw?.startsWith("//")) {
+    return ensureSslMode(`postgresql:${raw}`);
   }
 
-  return raw;
+  return buildDatabaseUrlFromParts();
 }
 
 export function getDatabaseUrlScheme(): string | undefined {
   const url = getDatabaseUrl();
   if (!url) return undefined;
   return url.split(":", 1)[0];
+}
+
+export function getDatabaseHost(): string | undefined {
+  const url = getDatabaseUrl();
+  if (!url) return undefined;
+  const match = url.match(/@([^/?]+)/);
+  return match?.[1];
 }
 
 export function getNextAuthUrl(): string | undefined {

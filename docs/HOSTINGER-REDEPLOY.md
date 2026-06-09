@@ -24,6 +24,7 @@ cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 | Name | Value |
 |------|-------|
 | `DATABASE_URL` | connection string จาก Neon |
+| `DB_HOST` / `DB_USER` / `DB_PASSWORD` / `DB_NAME` | fallback ถ้า Hostinger ตัด `?` ใน URL |
 | `NEXTAUTH_SECRET` | ค่า secret (ใส่ `"..."` ครอบถ้ามีอักขระพิเศษ) |
 | `AUTH_SECRET` | ค่าเดียวกับ `NEXTAUTH_SECRET` |
 | `NEXTAUTH_URL` | `https://techfloy.com` |
