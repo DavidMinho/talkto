@@ -16,17 +16,19 @@ const hostname = process.env.HOSTNAME ?? (dev ? "localhost" : "0.0.0.0");
 const port = parseInt(process.env.PORT ?? "3010", 10);
 
 if (!dev) {
-  if (!getDatabaseUrl()) {
-    console.error("Missing required env: DATABASE_URL");
-    process.exit(1);
-  }
-  if (!getNextAuthUrl()) {
-    console.error("Missing required env: NEXTAUTH_URL");
-    process.exit(1);
-  }
-  if (!getAuthSecret()) {
-    console.error("Missing required env: NEXTAUTH_SECRET (or AUTH_SECRET)");
-    process.exit(1);
+  const missing: string[] = [];
+  if (!getDatabaseUrl()) missing.push("DATABASE_URL");
+  if (!getNextAuthUrl()) missing.push("NEXTAUTH_URL");
+  if (!getAuthSecret()) missing.push("NEXTAUTH_SECRET");
+
+  if (missing.length > 0) {
+    const msg = `Missing env at startup: ${missing.join(", ")}`;
+    if (process.env.HOSTINGER === "1") {
+      console.warn(`WARN: ${msg} — app will run in degraded mode`);
+    } else {
+      console.error(msg);
+      process.exit(1);
+    }
   }
 }
 

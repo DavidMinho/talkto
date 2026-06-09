@@ -68,7 +68,18 @@ function AuthFormInner({ mode }: { mode: Mode }) {
       router.push(callbackUrl);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด");
+      const msg = err instanceof Error ? err.message : "เกิดข้อผิดพลาด";
+      if (
+        msg.includes("Unexpected token") ||
+        msg.includes("<!DOCTYPE") ||
+        msg.includes("503")
+      ) {
+        setError(
+          "เซิร์ฟเวอร์ไม่พร้อมชั่วคราว — รอสักครู่แล้วลองใหม่ หรือตรวจ deploy บน Hostinger",
+        );
+        return;
+      }
+      setError(msg);
     } finally {
       setLoading(false);
     }

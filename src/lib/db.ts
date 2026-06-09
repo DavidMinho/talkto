@@ -4,6 +4,14 @@ import { getDatabaseUrl, loadRuntimeEnv } from "@/lib/runtime-env";
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 export function getPrisma(): PrismaClient {
+  const client = tryGetPrisma();
+  if (!client) {
+    throw new Error("DATABASE_URL is not configured");
+  }
+  return client;
+}
+
+export function tryGetPrisma(): PrismaClient | null {
   if (globalForPrisma.prisma) {
     return globalForPrisma.prisma;
   }
@@ -11,7 +19,7 @@ export function getPrisma(): PrismaClient {
   loadRuntimeEnv();
   const databaseUrl = getDatabaseUrl();
   if (!databaseUrl) {
-    throw new Error("DATABASE_URL is not configured");
+    return null;
   }
 
   process.env.DATABASE_URL = databaseUrl;

@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import { tryGetPrisma } from "@/lib/db";
 import { apiSuccess } from "@/lib/api/response";
 import {
   findProjectRoot,
@@ -29,8 +29,13 @@ export async function GET() {
   let db: "connected" | "disconnected" = "disconnected";
   let dbHint: string | undefined;
   try {
-    await prisma.$queryRaw`SELECT 1`;
-    db = "connected";
+    const client = tryGetPrisma();
+    if (!client) {
+      dbHint = "database-not-configured";
+    } else {
+      await client.$queryRaw`SELECT 1`;
+      db = "connected";
+    }
   } catch (error) {
     dbHint = safeDbHint(error);
     // Keep 200 so platform health checks pass once the process is up.

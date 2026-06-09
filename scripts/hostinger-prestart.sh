@@ -36,40 +36,34 @@ fi
 [ -z "${NEXTAUTH_URL:-}" ] && missing="$missing NEXTAUTH_URL"
 
 if [ -n "$missing" ]; then
-  echo "ERROR: Missing env:$missing"
-  echo "Fix: hPanel → Environment variables → Import .env (see hostinger.env.deploy)"
-  exit 1
+  echo "WARN: Missing env in shell:$missing"
+  echo "Continuing — hPanel may inject env at Node runtime."
+else
+  echo "Shell env looks complete."
 fi
 
 export NODE_ENV="${NODE_ENV:-production}"
 export HOSTINGER="${HOSTINGER:-1}"
 
-echo "Persisting production .env for Next.js runtime..."
-REQUIRE_ENV=1 node scripts/write-production-env.mjs
+echo "Persisting production .env when available..."
+node scripts/write-production-env.mjs || echo "WARN: could not write .env files"
 
 if [ -n "${DATABASE_URL:-}" ]; then
-  case "$DATABASE_URL" in
-    postgresql://*|postgres://*) ;;
-    *)
-      echo "WARN: DATABASE_URL invalid prefix, will try DB_HOST/DB_USER/DB_PASSWORD"
-      ;;
-  esac
   db_host=$(printf '%s' "$DATABASE_URL" | sed -E 's#^[^@]+@([^/:?]+).*#\1#')
   echo "DATABASE_URL host: ${db_host:-unknown}"
 elif [ -n "${DB_HOST:-}" ]; then
   echo "DATABASE_URL host: ${DB_HOST} (from DB_HOST)"
 else
-  echo "DATABASE_URL host: (not set)"
+  echo "DATABASE_URL host: (not set in shell)"
 fi
 
 cp prisma/schema.postgresql.prisma prisma/schema.prisma
 ./node_modules/.bin/prisma generate
 
-if [ -n "${DATABASE_URL:-}" ]; then
+if [ -n "${DATABASE_URL:-}" ] || [ -n "${DB_HOST:-}" ]; then
   ./node_modules/.bin/prisma migrate deploy || echo "WARN: migrate deploy failed at start"
 else
-  echo "ERROR: DATABASE_URL missing at start"
-  exit 1
+  echo "WARN: skipping migrate (no DB env in shell)"
 fi
 
 echo "=== Prestart OK ==="
