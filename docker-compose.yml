@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: talkto
+      POSTGRES_PASSWORD: talkto
+      POSTGRES_DB: talkto
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U talkto"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    ports:
+      - "3010:3000"
+    environment:
+      DATABASE_URL: postgresql://talkto:talkto@db:5432/talkto
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3010}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

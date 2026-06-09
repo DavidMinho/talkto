@@ -1,0 +1,26 @@
+# Render Blueprint — ฟรี tier (Web Service จะ sleep หลังไม่มี traffic ~15 นาที)
+# สร้าง PostgreSQL ฟรีที่ https://neon.tech แล้วใส่ connection string ใน DATABASE_URL
+services:
+  - type: web
+    name: talkto
+    runtime: docker
+    plan: free
+    region: singapore
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
