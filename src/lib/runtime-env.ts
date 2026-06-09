@@ -93,15 +93,45 @@ export function loadRuntimeEnv() {
   loaded = true;
 }
 
+function normalizeEnvValue(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+
+  let normalized = value.trim();
+  while (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+
+  return normalized || undefined;
+}
+
 export function getAuthSecret(): string | undefined {
-  return (
-    runtimeEnv("NEXTAUTH", "SECRET") ??
-    runtimeEnv("AUTH", "SECRET")
+  return normalizeEnvValue(
+    runtimeEnv("NEXTAUTH", "SECRET") ?? runtimeEnv("AUTH", "SECRET"),
   );
 }
 
 export function getDatabaseUrl(): string | undefined {
-  return runtimeEnv("DATABASE", "URL");
+  const raw = normalizeEnvValue(runtimeEnv("DATABASE", "URL"));
+  if (!raw) return undefined;
+
+  if (raw.startsWith("postgresql://") || raw.startsWith("postgres://")) {
+    return raw;
+  }
+
+  if (raw.startsWith("//")) {
+    return `postgresql:${raw}`;
+  }
+
+  return raw;
+}
+
+export function getDatabaseUrlScheme(): string | undefined {
+  const url = getDatabaseUrl();
+  if (!url) return undefined;
+  return url.split(":", 1)[0];
 }
 
 export function getNextAuthUrl(): string | undefined {

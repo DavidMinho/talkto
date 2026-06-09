@@ -3,6 +3,7 @@ import { apiSuccess } from "@/lib/api/response";
 import {
   findProjectRoot,
   getAuthSecret,
+  getDatabaseUrlScheme,
   getLoadedEnvFiles,
   runtimeEnv,
 } from "@/lib/runtime-env";
@@ -34,6 +35,7 @@ export async function GET() {
   }
 
   const hasDatabaseUrl = Boolean(runtimeEnv("DATABASE", "URL"));
+  const dbScheme = getDatabaseUrlScheme();
   const hasAuthSecret = Boolean(getAuthSecret());
 
   return apiSuccess({
@@ -41,6 +43,7 @@ export async function GET() {
     db,
     auth: hasAuthSecret ? "configured" : "missing-secret",
     env: hasDatabaseUrl ? "database-url-set" : "database-url-missing",
+    dbScheme: dbScheme ?? "missing",
     cwd: process.cwd(),
     root: findProjectRoot(),
     envFiles: getLoadedEnvFiles(),

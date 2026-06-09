@@ -46,6 +46,14 @@ echo "Persisting production .env for Next.js runtime..."
 REQUIRE_ENV=1 node scripts/write-production-env.mjs
 
 if [ -n "${DATABASE_URL:-}" ]; then
+  case "$DATABASE_URL" in
+    postgresql://*|postgres://*) ;;
+    *)
+      echo "ERROR: DATABASE_URL must start with postgresql://"
+      echo "Current prefix: $(printf '%.20s' "$DATABASE_URL")"
+      exit 1
+      ;;
+  esac
   db_host=$(printf '%s' "$DATABASE_URL" | sed -E 's#^[^@]+@([^/:?]+).*#\1#')
   echo "DATABASE_URL host: ${db_host:-unknown}"
 else
