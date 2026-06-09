@@ -70,15 +70,21 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true, name: true, email: true, avatarUrl: true },
-        });
-        session.user.role = dbUser?.role ?? UserRoles.USER;
-        session.user.name = dbUser?.name ?? (token.name as string);
-        session.user.email = dbUser?.email ?? session.user.email;
-        session.user.avatarUrl =
-          dbUser?.avatarUrl ?? (token.avatarUrl as string | null) ?? null;
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true, name: true, email: true, avatarUrl: true },
+          });
+          session.user.role = dbUser?.role ?? UserRoles.USER;
+          session.user.name = dbUser?.name ?? (token.name as string);
+          session.user.email = dbUser?.email ?? session.user.email;
+          session.user.avatarUrl =
+            dbUser?.avatarUrl ?? (token.avatarUrl as string | null) ?? null;
+        } catch {
+          session.user.role = (token.role as typeof UserRoles.USER) ?? UserRoles.USER;
+          session.user.name = (token.name as string) ?? session.user.name;
+          session.user.avatarUrl = (token.avatarUrl as string | null) ?? null;
+        }
       }
       return session;
     },

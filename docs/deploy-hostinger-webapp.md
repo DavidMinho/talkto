@@ -49,7 +49,11 @@
 1. แก้ `NEXTAUTH_URL` ให้ตรง URL
 2. **Redeploy**
 
-ทดสอบ: `https://YOUR-URL/api/health`
+ทดสอบ: `https://YOUR-URL/api/health` → ต้องได้ `"db":"connected"`
+
+ถ้าได้ `"db":"disconnected"` หรือหน้าแรก error 500 → ตรวจ `DATABASE_URL` และ `NEXTAUTH_SECRET` ใน Environment แล้ว Redeploy
+
+**ทดสอบเร็ว:** เปิด `https://techfloy.com/login` ก่อน (หน้า login มักโหลดได้แม้ DB ยังไม่ต่อ)
 
 ---
 
