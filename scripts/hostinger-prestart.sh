@@ -26,6 +26,13 @@ fi
 
 export NODE_ENV="${NODE_ENV:-production}"
 
+if [ -n "${DATABASE_URL:-}" ]; then
+  db_host=$(printf '%s' "$DATABASE_URL" | sed -E 's#^[^@]+@([^/:?]+).*#\1#')
+  echo "DATABASE_URL host: ${db_host:-unknown}"
+else
+  echo "DATABASE_URL host: (not set)"
+fi
+
 cp prisma/schema.postgresql.prisma prisma/schema.prisma
 npx prisma generate
 npx prisma migrate deploy

@@ -27,7 +27,7 @@ cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 |------|-----|
 | Node.js | **20** |
 | Output directory | *(ว่าง หรือ `.next`)* |
-| Entry file | *(ว่าง — ใช้ npm start)* |
+| Entry file | *(ว่าง — ใช้ Start command ด้านล่าง)* |
 | Build command | `npm ci --ignore-scripts && npm run build:hostinger` |
 | Start command | `npm run start:hostinger` |
 
