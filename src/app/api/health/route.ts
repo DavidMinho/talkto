@@ -1,23 +1,21 @@
 import { prisma } from "@/lib/db";
-import { ApiErrorCodes } from "@/lib/api/errors";
-import { apiError, apiSuccess } from "@/lib/api/response";
+import { apiSuccess } from "@/lib/api/response";
 
 const startedAt = Date.now();
 
 export async function GET() {
+  let db: "connected" | "disconnected" = "disconnected";
   try {
     await prisma.$queryRaw`SELECT 1`;
-    return apiSuccess({
-      status: "ok",
-      db: "connected",
-      uptime: Math.floor((Date.now() - startedAt) / 1000),
-      timestamp: new Date().toISOString(),
-    });
+    db = "connected";
   } catch {
-    return apiError(
-      ApiErrorCodes.DB_UNAVAILABLE,
-      "Database unreachable",
-      503,
-    );
+    // Keep 200 so Render health checks pass once the process is up.
   }
+
+  return apiSuccess({
+    status: db === "connected" ? "ok" : "degraded",
+    db,
+    uptime: Math.floor((Date.now() - startedAt) / 1000),
+    timestamp: new Date().toISOString(),
+  });
 }

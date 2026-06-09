@@ -20,6 +20,7 @@ function parseUrl(req: IncomingMessage) {
 }
 
 app.prepare().then(() => {
+  console.log(`Preparing Talkto (NODE_ENV=${process.env.NODE_ENV}, PORT=${port})`);
   const server = createServer(async (req, res) => {
     try {
       const parsedUrl = parseUrl(req);
@@ -36,4 +37,7 @@ app.prepare().then(() => {
   server.listen(port, hostname, () => {
     console.log(`> Talkto ready on http://${hostname}:${port}`);
   });
+}).catch((err) => {
+  console.error("Failed to start Talkto:", err);
+  process.exit(1);
 });
