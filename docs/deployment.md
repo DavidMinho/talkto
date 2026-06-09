@@ -58,6 +58,10 @@ docker compose up --build
 4. ตั้ง env: `DATABASE_URL`, `NEXTAUTH_URL`, `NEXTAUTH_SECRET`, `CLOUDINARY_*`
 5. Health check path: `/api/health`
 
+## Hostinger
+
+ดูขั้นตอนละเอียด (VPS + PM2 + Nginx หรือ Node.js Web App): **[deploy-hostinger.md](./deploy-hostinger.md)**
+
 ## Notes
 
 - Socket.io requires a persistent process — use Web Service, not static hosting
