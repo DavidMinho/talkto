@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd "$(dirname "$0")/.." || exit 1
+
 export NODE_ENV="${NODE_ENV:-production}"
 export HOSTINGER="${HOSTINGER:-1}"
 

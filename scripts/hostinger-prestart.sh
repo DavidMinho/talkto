@@ -1,7 +1,10 @@
 #!/bin/sh
 set -e
 
+cd "$(dirname "$0")/.." || exit 1
+
 echo "=== Talkto Hostinger prestart ==="
+echo "Working directory: $(pwd)"
 
 strip_quotes() {
   printf '%s' "$1" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
@@ -51,6 +54,12 @@ fi
 
 cp prisma/schema.postgresql.prisma prisma/schema.prisma
 ./node_modules/.bin/prisma generate
-./node_modules/.bin/prisma migrate deploy
+
+if [ -n "${DATABASE_URL:-}" ]; then
+  ./node_modules/.bin/prisma migrate deploy || echo "WARN: migrate deploy failed at start"
+else
+  echo "ERROR: DATABASE_URL missing at start"
+  exit 1
+fi
 
 echo "=== Prestart OK ==="

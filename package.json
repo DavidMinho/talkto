@@ -7,7 +7,7 @@
     "build": "prisma generate && next build",
     "start": "sh scripts/hostinger-prestart.sh && sh scripts/hostinger-start.sh",
     "start:prod": "sh scripts/hostinger-prestart.sh && sh scripts/hostinger-start.sh",
-    "build:hostinger": "cp prisma/schema.postgresql.prisma prisma/schema.prisma && npx prisma generate && next build",
+    "build:hostinger": "sh scripts/build-hostinger.sh",
     "start:hostinger": "sh scripts/hostinger-prestart.sh && sh scripts/hostinger-start.sh",
     "lint": "eslint",
     "db:migrate": "prisma migrate dev",

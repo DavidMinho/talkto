@@ -29,6 +29,7 @@ cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 | Output directory | *(ว่าง หรือ `.next`)* |
 | Entry file | *(ว่าง — ใช้ Start command ด้านล่าง)* |
 | Build command | `npm ci --ignore-scripts && npm run build:hostinger` |
+| Root directory | โฟลเดอร์ที่มี `package.json` (มักเป็น repo root) |
 | Start command | `npm start` หรือ `npm run start:hostinger` |
 
 ---
