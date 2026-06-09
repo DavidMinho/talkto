@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { apiSuccess } from "@/lib/api/response";
+import { getAuthSecret, runtimeEnv } from "@/lib/runtime-env";
 
 const startedAt = Date.now();
 
@@ -27,9 +28,14 @@ export async function GET() {
     // Keep 200 so platform health checks pass once the process is up.
   }
 
+  const hasDatabaseUrl = Boolean(runtimeEnv("DATABASE_URL"));
+  const hasAuthSecret = Boolean(getAuthSecret());
+
   return apiSuccess({
-    status: db === "connected" ? "ok" : "degraded",
+    status: db === "connected" && hasAuthSecret ? "ok" : "degraded",
     db,
+    auth: hasAuthSecret ? "configured" : "missing-secret",
+    env: hasDatabaseUrl ? "database-url-set" : "database-url-missing",
     ...(dbHint ? { dbHint } : {}),
     uptime: Math.floor((Date.now() - startedAt) / 1000),
     timestamp: new Date().toISOString(),

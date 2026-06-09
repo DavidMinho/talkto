@@ -3,11 +3,19 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { ensureAdminRole } from "@/lib/admin-access";
 import { UserRoles } from "@/lib/roles";
+import { getAuthSecret, loadRuntimeEnv } from "@/lib/runtime-env";
 import { rateLimit } from "./api/rate-limit";
 import { prisma } from "./db";
 
-export const authOptions: NextAuthOptions = {
-  providers: [
+export function buildAuthOptions(): NextAuthOptions {
+  loadRuntimeEnv();
+  const secret = getAuthSecret();
+  if (!secret) {
+    console.error("[auth] Missing NEXTAUTH_SECRET or AUTH_SECRET");
+  }
+
+  return {
+    providers: [
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -43,57 +51,62 @@ export const authOptions: NextAuthOptions = {
           role,
         };
       },
-    }),
-  ],
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-  },
-  callbacks: {
-    async jwt({ token, user, trigger, session }) {
-      if (user) {
-        token.id = user.id;
-        token.role = user.role;
-        token.name = user.name;
-        token.avatarUrl = user.avatarUrl ?? null;
-      }
-
-      if (trigger === "update" && session?.user) {
-        if (session.user.name) token.name = session.user.name;
-        if (session.user.avatarUrl !== undefined) {
-          token.avatarUrl = session.user.avatarUrl;
-        }
-      }
-
-      return token;
+      }),
+    ],
+    session: { strategy: "jwt" },
+    pages: {
+      signIn: "/login",
     },
-    async session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { id: token.id as string },
-            select: { role: true, name: true, email: true, avatarUrl: true },
-          });
-          session.user.role = dbUser?.role ?? UserRoles.USER;
-          session.user.name = dbUser?.name ?? (token.name as string);
-          session.user.email = dbUser?.email ?? session.user.email;
-          session.user.avatarUrl =
-            dbUser?.avatarUrl ?? (token.avatarUrl as string | null) ?? null;
-        } catch {
-          session.user.role = (token.role as typeof UserRoles.USER) ?? UserRoles.USER;
-          session.user.name = (token.name as string) ?? session.user.name;
-          session.user.avatarUrl = (token.avatarUrl as string | null) ?? null;
+    callbacks: {
+      async jwt({ token, user, trigger, session }) {
+        if (user) {
+          token.id = user.id;
+          token.role = user.role;
+          token.name = user.name;
+          token.avatarUrl = user.avatarUrl ?? null;
         }
-      }
-      return session;
+
+        if (trigger === "update" && session?.user) {
+          if (session.user.name) token.name = session.user.name;
+          if (session.user.avatarUrl !== undefined) {
+            token.avatarUrl = session.user.avatarUrl;
+          }
+        }
+
+        return token;
+      },
+      async session({ session, token }) {
+        if (session.user && token.id) {
+          session.user.id = token.id as string;
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { id: token.id as string },
+              select: { role: true, name: true, email: true, avatarUrl: true },
+            });
+            session.user.role = dbUser?.role ?? UserRoles.USER;
+            session.user.name = dbUser?.name ?? (token.name as string);
+            session.user.email = dbUser?.email ?? session.user.email;
+            session.user.avatarUrl =
+              dbUser?.avatarUrl ?? (token.avatarUrl as string | null) ?? null;
+          } catch {
+            session.user.role =
+              (token.role as typeof UserRoles.USER) ?? UserRoles.USER;
+            session.user.name = (token.name as string) ?? session.user.name;
+            session.user.avatarUrl =
+              (token.avatarUrl as string | null) ?? null;
+          }
+        }
+        return session;
+      },
     },
-  },
-  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
-};
+    secret,
+  };
+}
+
+export const authOptions = buildAuthOptions();
 
 export function getSession() {
-  return getServerSession(authOptions);
+  return getServerSession(buildAuthOptions());
 }
 
 export async function requireUserId() {

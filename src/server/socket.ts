@@ -2,6 +2,7 @@ import type { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import { getToken } from "next-auth/jwt";
 import { prisma } from "@/lib/db";
+import { getAuthSecret } from "@/lib/runtime-env";
 import { sanitizeMessage } from "@/lib/api/sanitize";
 import { createMessage } from "@/lib/services/conversation.service";
 import { pushNewMessage } from "@/server/message-push";
@@ -32,7 +33,7 @@ export function initSocketServer(httpServer: HttpServer) {
         req: (socket.request ?? {
           headers: socket.handshake.headers,
         }) as never,
-        secret: process.env.NEXTAUTH_SECRET,
+        secret: getAuthSecret(),
       });
 
       if (!token?.id) {

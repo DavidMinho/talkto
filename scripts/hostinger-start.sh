@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+export NODE_ENV="${NODE_ENV:-production}"
+export HOSTINGER="${HOSTINGER:-1}"
+
 if [ -f .env ]; then
   set -a
   # shellcheck disable=SC1091
@@ -8,5 +11,4 @@ if [ -f .env ]; then
   set +a
 fi
 
-export NODE_ENV="${NODE_ENV:-production}"
 exec npx tsx server.ts

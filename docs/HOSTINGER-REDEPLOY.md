@@ -49,12 +49,18 @@ cat /Users/davidminho/CloudEx/CloudWorks/Dev/Talkto/hostinger.env.deploy
 
 | URL | ผลที่ต้องการ |
 |-----|-------------|
-| `/api/health` | `"db":"connected"` |
+| `/api/health` | `"db":"connected"`, `"auth":"configured"`, `"env":"database-url-set"` |
 | `/talktologo.png` | 200 |
 | `/login` | หน้า login + โลโก้ PNG |
 | `/api/auth/session` | `{}` ไม่ error |
 
 ---
+
+## ถ้า Server error / NextAuth config error
+
+- `/api/health` แสดง `"auth":"missing-secret"` → Import `.env` ใหม่ (ดู `NEXTAUTH_SECRET` + `AUTH_SECRET`)
+- `/api/health` แสดง `"env":"database-url-missing"` → ตรวจ `DATABASE_URL` ใน Environment
+- Log ต้องเห็น `Wrote .env with ... variables` หลัง prestart
 
 ## ถ้า 503
 
