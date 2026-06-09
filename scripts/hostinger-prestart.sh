@@ -3,6 +3,10 @@ set -e
 
 echo "=== Talkto Hostinger prestart ==="
 
+strip_quotes() {
+  printf '%s' "$1" | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//"
+}
+
 if [ -f .env ]; then
   echo "Loading .env file..."
   set -a
@@ -10,6 +14,14 @@ if [ -f .env ]; then
   . ./.env
   set +a
 fi
+
+for key in DATABASE_URL NEXTAUTH_SECRET AUTH_SECRET NEXTAUTH_URL CLOUDINARY_CLOUD_NAME CLOUDINARY_API_KEY CLOUDINARY_API_SECRET ADMIN_EMAILS; do
+  eval "val=\${$key:-}"
+  if [ -n "$val" ]; then
+    cleaned=$(strip_quotes "$val")
+    eval "export $key=\$cleaned"
+  fi
+done
 
 missing=""
 [ -z "${DATABASE_URL:-}" ] && missing="$missing DATABASE_URL"
@@ -38,7 +50,7 @@ else
 fi
 
 cp prisma/schema.postgresql.prisma prisma/schema.prisma
-npx prisma generate
-npx prisma migrate deploy
+./node_modules/.bin/prisma generate
+./node_modules/.bin/prisma migrate deploy
 
 echo "=== Prestart OK ==="
