@@ -12,6 +12,7 @@
 | Entry file | `server.ts` |
 | Build command | `npm ci --ignore-scripts && npm run build:hostinger` |
 | Start command | `npm run start:hostinger` |
+| Import env | ใช้ **Import .env** วางจาก `hostinger.env.deploy` |
 
 ### Environment variables (ครบทุกตัว)
 
