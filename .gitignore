@@ -39,6 +39,7 @@ yarn-error.log*
 .env.neon.deploy
 env.render.ready
 hostinger.env.deploy
+hetzner.env.deploy
 scripts/vps-install-ready.sh
 .env.vps.deploy
 !.env.example

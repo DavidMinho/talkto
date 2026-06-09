@@ -31,5 +31,5 @@ COPY --from=builder /app/next-env.d.ts ./next-env.d.ts
 COPY --from=builder /app/src ./src
 COPY scripts/docker-entrypoint.sh ./scripts/docker-entrypoint.sh
 RUN chmod +x ./scripts/docker-entrypoint.sh
-EXPOSE 10000
+EXPOSE 3010
 CMD ["./scripts/docker-entrypoint.sh"]

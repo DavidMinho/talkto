@@ -22,5 +22,5 @@ if ! npx prisma migrate deploy; then
   exit 1
 fi
 
-echo "Starting Talkto on port ${PORT:-10000}..."
+echo "Starting Talkto on port ${PORT:-3010}..."
 exec npx tsx server.ts
